@@ -74,27 +74,29 @@ window.onload = function() {
    var setRandom = gui.addFolder('Render Objects Options');
    setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
-       nextFrame = rayCaster(0);
+       nextFrame = shapeData(0);
    }).name('Sphere');
    setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
-       nextFrame = rayCaster(1);
+       nextFrame = shapeData(1);
    }).name('Cube');
    setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
-       nextFrame = rayCaster(2);
+       nextFrame = shapeData(2);
    }).name('Helix');
    setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
-       nextFrame = rayCaster(3);
+       nextFrame = shapeData(3);
    }).name('Torus');
    setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
-       nextFrame = rayCaster(4);
+       nextFrame = shapeData(4);
    }).name('Atom');
    setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
-       nextFrame = rayCaster(5);
+       nextFrame = shapeData(5); //Scans 3D Object
+    // nextFrame = mathData(1);
+
    }).name('Planes');
    setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
       simSelect = 4;

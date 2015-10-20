@@ -323,7 +323,7 @@
         scene.add(light2);
 
         //shinerays
-        rayCaster(0);
+        shapeData(0);
 
         scene.fog = new THREE.Fog(0x333333, 1, 7000);
 
@@ -655,10 +655,12 @@
     }
 
     //SCAN 3D OBJECT TO DETERMINE INTERSECTION POINTS TO CREATE NEXT FRAME:
-    function rayCaster(object) {
+    function shapeData(object) {
 
             remove(rayObject);
             rayObject = [];
+
+            //Draw the object
             drawStaticObject(object);
 
             var rayFrame = [];
@@ -672,11 +674,10 @@
 
             for (var x = 0; x < columns; x++) {
                 for (var z = 0; z < columns; z++) {
+
                     yP = 0;
-                    xP = Math.floor(i / columns) * columnDist - ((columnDist *
-                        columns) / 2) + (columnDist / 2);
-                    zP = (i % columns) * columnDist - ((columnDist * columns) / 2) +
-                        (columnDist / 2);
+                    xP = Math.floor(i / columns) * columnDist - ((columnDist * columns) / 2) + (columnDist / 2);
+                    zP = (i % columns) * columnDist - ((columnDist * columns) / 2) + (columnDist / 2);
 
                     var startPoint = new THREE.Vector3(xP, yP, zP);
                     var direction = new THREE.Vector3(xP, (yP + heightY), zP);
@@ -684,19 +685,6 @@
                     var ray = new THREE.Raycaster(startPoint, direction.normalize());
                     scene.updateMatrixWorld();
                     var rayIntersects = ray.intersectObjects(rayObject, true);
-
-                    if (visualizeRays == true) {
-                        var material = new THREE.LineBasicMaterial({
-                            color: 0x00ff00
-                        });
-                        var geometry = new THREE.Geometry();
-                        geometry.vertices.push(new THREE.Vector3(ray.ray.origin.x,
-                            ray.ray.origin.y, ray.ray.origin.z));
-                        geometry.vertices.push(new THREE.Vector3(ray.ray.origin.x,
-                            ray.ray.origin.y + heightY, ray.ray.origin.z));
-                        var line = new THREE.Line(geometry, material);
-                        scene.add(line);
-                    }
 
 
                     for (var r = 0; r < positions; r++) {
@@ -720,7 +708,7 @@
             remove(rayObject);
 
             return rayFrame;
-        } //END Raycaster
+        } //END shapeData
 
 
 
@@ -842,25 +830,25 @@
                 break;
 
             case 5:
-                //Planes
-                // var staticFrame = [];
-                // var i = 0;
-                // for (var x = 0; x < lev.xsize; x++) {
-                //     for (var z = 0; z < lev.zsize; z++) {
-                //         for (var y = 0; y < lev.ysize; y++) {
-                //
-                //             if (y == 0) {
-                //                 staticFrame.push(300);
-                //             } else {
-                //                 staticFrame.push(ballsDefYPos[i]);
-                //             }
-                //
-                //             i++;
-                //         }
-                //     }
-                // }
-                //
-                // moveToFrame(staticFrame);
+                Planes
+                var staticFrame = [];
+                var i = 0;
+                for (var x = 0; x < lev.xsize; x++) {
+                    for (var z = 0; z < lev.zsize; z++) {
+                        for (var y = 0; y < lev.ysize; y++) {
+
+                            if (y == 0) {
+                                staticFrame.push(300);
+                            } else {
+                                staticFrame.push(ballsDefYPos[i]);
+                            }
+
+                            i++;
+                        }
+                    }
+                }
+
+                moveToFrame(staticFrame);
                 break;
             default:
 
