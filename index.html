@@ -62,6 +62,9 @@
     visualizeRays = false;
 
     wav_offset = 900;
+    guiLoaded = false;
+
+
 
     </script>
 
@@ -72,6 +75,7 @@
     <script type="text/javascript" src="js/dat.gui.min.js"></script>
     <script type="text/javascript" src="js/CurveExtras.js"></script>
     <script type="text/javascript" src="js/levGui.js"></script>
+    <script src="http://mrdoob.github.com/three.js/examples/fonts/helvetiker_regular.typeface.js"></script>
 
     <script type="text/javascript">
     //STATS
@@ -98,7 +102,6 @@
 
     var mouse = new THREE.Vector2(),
         INTERSECTED;
-
 
     ////////////////////// " LEV " ////////////////////////////
 
@@ -299,6 +302,7 @@
         color: 0xdddddd,
         shininess: 30
     });
+
 
     function init() {
 
@@ -938,6 +942,8 @@
             default:
 
         }
+
+
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -988,6 +994,10 @@
             var intersects = raycasterDrag.intersectObject(lev.plane);
             lev.offset.copy(intersects[0].point).sub(lev.plane.position);
 
+            if(guiLoaded = true){
+              LevGui.ballid = lev.selection.id;
+            }
+
         }
 
 
@@ -1019,7 +1029,9 @@
                     document.body.style.cursor = 'move';
 
                 }
+
             }
+
 
         } else {
             if (mouseClicked == false) {
@@ -1096,8 +1108,6 @@
     window.addEventListener('mousemove', onMouseMove, false);
     window.addEventListener('resize', onWindowResize, false);
     window.requestAnimationFrame(render);
-
-
 
 
     //Initialize//

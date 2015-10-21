@@ -1,6 +1,8 @@
 //GUI //////////////////////////////////////////////////////////////////////
 
-var levGui = function() {
+var LevGui = function() {
+
+   this.ballid = 1;
 
    this.setInteractionMethod = function() {};
 
@@ -26,15 +28,15 @@ var levGui = function() {
 
    this.selectSim2 = function() {};
 
-   // Define render logic ...
 };
 
 window.onload = function() {
 
-   var params = new levGui();
+   var levGui = new LevGui();
    var gui = new dat.GUI();
 
-   gui.add(params, 'selectSim2').options({
+
+   gui.add(levGui, 'selectSim2').options({
        'None': 0,
        'Wave': 1,
        'Clear All': 2,
@@ -47,21 +49,23 @@ window.onload = function() {
        }
    }).name('Function:');
 
+   gui.add(levGui, 'ballid').name('Ball ID:').listen();
+
    var setInteraction = gui.addFolder('Interaction Options');
-   setInteraction.add(params, 'setInteractionMethod').onFinishChange(function() { intSelect = 0; }).name('Move All');
-   setInteraction.add(params, 'setInteractionMethod').onFinishChange(function() { intSelect = 1; }).name('Move Single');
+   setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 0; }).name('Move All');
+   setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 1; }).name('Move Single');
 
 
    var setWav = gui.addFolder('Wave App Options');
-   setWav.add(params, 'wav_amplitude', 0, 1).onFinishChange(function(newValue) {
+   setWav.add(levGui, 'wav_amplitude', 0, 1).onFinishChange(function(newValue) {
        simSelect = 1;
        wav_amplitude = newValue;
    });
-   setWav.add(params, 'wav_crests', 0, 20).onFinishChange(function(newValue) {
+   setWav.add(levGui, 'wav_crests', 0, 20).onFinishChange(function(newValue) {
        simSelect = 1;
        wav_crests = newValue;
    });
-   setWav.add(params, 'wav_offset', 0, 1000).step(1).onFinishChange(function(newValue) {
+   setWav.add(levGui, 'wav_offset', 0, 1000).step(1).onFinishChange(function(newValue) {
        simSelect = 1;
        wav_offset = newValue;
        orbitYPosition = ((lev.ysize * posDist) - posDist - (wav_offset / 2)) / 2;
@@ -72,55 +76,55 @@ window.onload = function() {
 
 
    var setRandom = gui.addFolder('Render Objects Options');
-   setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
+   setRandom.add(levGui, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
        nextFrame = shapeData(0);
    }).name('Sphere');
-   setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
+   setRandom.add(levGui, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
        nextFrame = shapeData(1);
    }).name('Cube');
-   setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
+   setRandom.add(levGui, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
        nextFrame = shapeData(2);
    }).name('Helix');
-   setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
+   setRandom.add(levGui, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
        nextFrame = shapeData(3);
    }).name('Torus');
-   setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
+   setRandom.add(levGui, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
        nextFrame = shapeData(4);
    }).name('Atom');
-   setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
+   setRandom.add(levGui, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
        nextFrame = shapeData(5); //Scans 3D Object
     // nextFrame = mathData(1);
 
    }).name('Planes');
-   setRandom.add(params, 'nextRandomFrame').onFinishChange(function() {
+   setRandom.add(levGui, 'nextRandomFrame').onFinishChange(function() {
       simSelect = 4;
        nextFrame = genrateRandomNext();
    }).name('Random Frame');
 
 
    var setLev = gui.addFolder('Lev Settings');
-   setLev.add(params, 'columns', 0, 20).step(1).onFinishChange(function(newValue) {
+   setLev.add(levGui, 'columns', 0, 20).step(1).onFinishChange(function(newValue) {
        columns = newValue;
        resetInlev();
    });
-   setLev.add(params, 'positions', 0, 20).step(1).onFinishChange(function(newValue) {
+   setLev.add(levGui, 'positions', 0, 20).step(1).onFinishChange(function(newValue) {
        positions = newValue;
        resetInlev();
    });
-   setLev.add(params, 'ballSpeed', 0, 0.05).onFinishChange(function(newValue) {
+   setLev.add(levGui, 'ballSpeed', 0, 0.05).onFinishChange(function(newValue) {
        ballSpeed = newValue;
    });
-   setLev.add(params, 'columnDist', 100, 300).step(10).onFinishChange(function(newValue) {
+   setLev.add(levGui, 'columnDist', 100, 300).step(10).onFinishChange(function(newValue) {
        columnDist = newValue;
        resetInlev();
    });
-   setLev.add(params, 'posDist', 100, 300).step(10).onFinishChange(function(newValue) {
+   setLev.add(levGui, 'posDist', 100, 300).step(10).onFinishChange(function(newValue) {
        posDist = newValue;
        resetInlev();
    });
@@ -128,16 +132,17 @@ window.onload = function() {
    var columnX = 0;
    var columnZ = 0;
    var selectCol = gui.addFolder('Select Column');
-   selectCol.add(params, 'columnX').onFinishChange(function(newValue) {
+   selectCol.add(levGui, 'columnX').onFinishChange(function(newValue) {
        columnX = newValue
    });
-   selectCol.add(params, 'columnZ').onFinishChange(function(newValue) {
+   selectCol.add(levGui, 'columnZ').onFinishChange(function(newValue) {
        columnZ = newValue
    });
-   selectCol.add(params, 'selectColl').onFinishChange(function() {
+   selectCol.add(levGui, 'selectColl').onFinishChange(function() {
        selectColumn(columnX, columnZ)
    }).name('Select Column');
-   selectCol.add(params, 'clear').name('Clear Selection');
+   selectCol.add(levGui, 'clear').name('Clear Selection');
 
+   guiLoaded = true;
 
 };
