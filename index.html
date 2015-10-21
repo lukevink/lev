@@ -237,6 +237,16 @@
         return this.balls[n];
     }
 
+    InLev.prototype.getPlane = function(n) {
+      var plane = [];
+        for (var i = 0; i < this.ysize*this.zsize*this.xsize; i++){
+          if (i%this.ysize == n){
+            plane.push(i)
+          }
+        }
+      return plane
+    }
+
     InLev.prototype.getBall = function(x, z, y) {
         if ((x > this.xsize) || (z > this.zsize) || (y > this.ysize) || (x < 0) ||
             (z < 0) || (y < 0))
@@ -379,6 +389,12 @@
         lev.getBall(x, z, y).material = new THREE.MeshBasicMaterial({
             color: 0xff0000
         });
+    }
+
+    function selectPlane(n) {
+      for (var i = 0; i < lev.getPlane(n).length; i++){
+          selectBallById(lev.getPlane(n)[i])
+      }
     }
 
     function clearSelect() {
@@ -1015,7 +1031,7 @@
 
         }
 
-        ///////////////////////////// TOUCH AND DRAG STUFF /////////////////////////
+        /////////////////////////////
 
         // Get 3D vector from 3D mouse position using 'unproject' function
         var vector = new THREE.Vector3(mouseX, mouseY, 1);
@@ -1035,8 +1051,6 @@
                 lev.selection.position.x = tempX;
                 lev.selection.position.z = tempZ;
             }
-
-            /////TODO: TOUCH FUNCTION (MOVE BALL / MOVE ALL / INTERPOLATE OR SOME SHIT LIKE THAT AND STUFF);
 
         } else {
             // Update position of the plane if need
