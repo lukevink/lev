@@ -83,7 +83,7 @@
     if(typeof(io) != "undefined"){
       var socket = io.connect('http://localhost:3000');
       socket.on('connect', function (data) {
-          socket.emit('TurnMeOn',{x:1, y:2});
+          socket.emit('TurnMeOn',"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< LEV CONNECTED >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
       });
     }
 
@@ -288,13 +288,20 @@
         return this.balls.slice().splice(n * this.xsize * this.zsize, this.xsize *
             this.zsize);
     }
-    InLev.prototype.getBallId = function(x, z, y) {
+    InLev.prototype.getBallIdXYZ = function(x, z, y) {
         if ((x > this.xsize) || (z > this.zsize) || (y > this.ysize) || (x < 0) ||
             (z < 0) || (y < 0))
             return null;
 
         for (var n = 0; n < lev.balls.length; n++) {
             if (lev.getBall(x, z, y) == lev.getBallById(n))
+                return n;
+        }
+    }
+
+    InLev.prototype.getBallId = function(theBall) {
+        for (var n = 0; n < lev.balls.length; n++) {
+            if (theBall == lev.getBallById(n))
                 return n;
         }
     }
@@ -1071,8 +1078,12 @@
             if (mouseClicked == true) {
                 lev.selection.position.x = tempX;
                 lev.selection.position.z = tempZ;
+                var tempY = parseInt(lev.selection.position.y);
+                var command = "B" + zeroFill(lev.getBallId(lev.selection), 3) + zeroFill(tempY, 3);
                 if(socket)
-                  socket.emit('ballMoved',lev.selection.id);
+                  socket.emit('ballMoved',{ID:((lev.selection.id)-5), y:tempY});
+                  socket.emit('ballY',tempY);
+                  socket.emit('ballCommand',command)
             }
 
 
@@ -1111,6 +1122,14 @@
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
+    }
+
+    function zeroFill(number, width) {
+      width -= number.toString().length;
+      if(width > 0) {
+          return new Array(width + (/\./.test(number) ? 2 : 1)).join('0') + number;
+      }
+      return number + ""; // always return a string
     }
 
 

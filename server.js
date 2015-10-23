@@ -31,15 +31,23 @@ io.on('connection', function (socket) {
       arduino.write("H");
   });
 
-  socket.on('ballMoved', function (data) {
-    console.log(data)
-    if(isOpen)
-    if(data>50){
-      arduino.write("L");
-    } else {
-      arduino.write("H");
-    }
+  // socket.on('ballMoved', function (data) {
+  //   console.log(data)
+  // });
 
+  // socket.on('ballY', function (data) {
+  //   if(isOpen)
+  //   if(data>150 & data<600){
+  //     arduino.write("H");
+  //   } else {
+  //     arduino.write("L");
+  //   }
+  // });
+
+  socket.on('ballCommand', function (data) {
+    if(isOpen)
+      arduino.write(data);
+      console.log(data);
   });
 
 
