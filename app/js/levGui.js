@@ -52,8 +52,9 @@ window.onload = function() {
    gui.add(levGui, 'ballid').name('Ball ID:').listen();
 
    var setInteraction = gui.addFolder('Interaction Options');
-   setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 0; }).name('Move All');
-   setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 1; }).name('Move Single');
+   setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 0; }).name('Move Single');
+   setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 1; }).name('Move All as Mesh');
+   setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 2; }).name('Pivot All ');
 
 
    var setWav = gui.addFolder('Wave App Options');
@@ -98,13 +99,15 @@ window.onload = function() {
    }).name('Atom');
    setRandom.add(levGui, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
-       nextFrame = shapeData(5); //Scans 3D Object
+       nextFrame = genrateRandomNext(); //Scans 3D Object
     // nextFrame = mathData(1);
 
    }).name('Planes');
+
+
    setRandom.add(levGui, 'nextRandomFrame').onFinishChange(function() {
       simSelect = 4;
-       nextFrame = genrateRandomNext();
+      nextFrame = genrateRandomNext();
    }).name('Random Frame');
 
 

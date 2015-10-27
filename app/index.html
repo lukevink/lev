@@ -12,6 +12,11 @@
             overflow: hidden;
         }
 
+
+        .openhand { cursor: url('img/oh-01.ico') 75 75, move !important;  }
+        .closedhand { cursor: url('img/ch-01.ico') 75 75, auto !important; }
+
+
         #info {
             position: absolute;
             top: 0px; width: 100%;
@@ -27,7 +32,9 @@
             background-image: url('img/logo.png');
             background-position:center center;
             background-size: contain;
+
         }
+
 
         a {
 
@@ -44,8 +51,8 @@
 
     <script type="text/javascript">
     // Global inLev Settings to Init with
-    columns = 5;
-    positions = 5;
+    columns = 10;
+    positions = 10;
     simSelect = 0;
     intSelect = 0;
     ballSpeed = 0.03;
@@ -83,7 +90,7 @@
     if(typeof(io) != "undefined"){
       var socket = io.connect('http://localhost:3000');
       socket.on('connect', function (data) {
-          socket.emit('TurnMeOn',"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< LEV CONNECTED >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+          socket.emit('TurnMeOn',{x:1, y:2});
       });
     }
 
@@ -135,10 +142,8 @@
 
         //  var geometry = new THREE.BoxGeometry( ballSize*2, ballSize*2, ballSize*2 );
         var geometry = new THREE.SphereGeometry(ballSize, ballSize, ballSize);
-        //  var material = new THREE.MeshNormalMaterial();
-        var material = new THREE.MeshLambertMaterial({
-            color: 0xcccccc
-        });
+        //          var material = new THREE.MeshNormalMaterial( { transparent: true, opacity: 0.5 } );
+        var material = new THREE.MeshLambertMaterial({  color: 0xcccccc });
 
         makeBalls(this.xsize, this.zsize, this.columnDistance, geometry,
             material, this.allBalls, this.balls);
@@ -171,7 +176,7 @@
         // deal with strings
         this.allStrings = new THREE.Group();
         var stringHeight = ((ysize * this.positionDistance) + this.positionDistance);
-        var stringGeometry = new THREE.CylinderGeometry(2, 2, stringHeight, 32);
+        var stringGeometry = new THREE.CylinderGeometry(1, 1, stringHeight, 32);
         var stringMaterial = new THREE.MeshBasicMaterial({
             color: 0 * 666666
         });
@@ -181,17 +186,14 @@
 
 
         // ABSTRACTION at work :-D! This function creates a layer of either balls or strings
-        function makeLayer(ypos, xsize, zsize, columnDist, geometry, material,
-            container) {
+        function makeLayer(ypos, xsize, zsize, columnDist, geometry, material, container) {
             var i = 0;
             for (var x = 0; x < xsize; x++) {
                 for (var z = 0; z < zsize; z++) {
                     var thing = new THREE.Mesh(geometry, material);
                     thing.position.y = ypos;
-                    thing.position.x = (i % xsize) * columnDist - ((
-                        columnDist * columns) / 2) + (columnDist / 2);
-                    thing.position.z = Math.floor(i / xsize) * columnDist -
-                        ((columnDist * columns) / 2) + (columnDist / 2);
+                    thing.position.x = (i % xsize) * columnDist - ((columnDist * columns) / 2) + (columnDist / 2);
+                    thing.position.z = Math.floor(i / xsize) * columnDist - ((columnDist * columns) / 2) + (columnDist / 2);
                     container.add(thing);
                     i++;
                 }
@@ -200,8 +202,7 @@
         }
 
         //Plane for drag
-        this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(2000, 2000, 8,
-            8), new THREE.MeshBasicMaterial({
+        this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(2000, 2000, 8, 8), new THREE.MeshBasicMaterial({
             color: 0xcccccc
         }));
         this.plane.visible = false;
@@ -299,11 +300,11 @@
         }
     }
 
-    InLev.prototype.getBallId = function(theBall) {
-        for (var n = 0; n < lev.balls.length; n++) {
-            if (theBall == lev.getBallById(n))
-                return n;
-        }
+    InLev.prototype.getBallId = function(ball) {
+      for (var n = 0; n < lev.balls.length; n++) {
+          if (ball == lev.getBallById(n))
+              return n;
+      }
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -439,20 +440,22 @@
         for (var x = 0; x < lev.xsize; x++) {
             for (var z = 0; z < lev.zsize; z++) {
                 for (var y = 0; y < lev.ysize; y++) {
-                    var curPosition = lev.getBall(x, z, y).position.y;
 
-                    if (curPosition < ballsDefYPos[i] - stepDistance + 1) {
-                        lev.getBall(x, z, y).position.y = curPosition +
-                            stepDistance;
-                    }
-                    if (curPosition > ballsDefYPos[i] + stepDistance - 1) {
-                        lev.getBall(x, z, y).position.y = curPosition -
-                            stepDistance;
-                    }
-                    if (curPosition < ballsDefYPos[i] + stepDistance - 1 &&
-                        curPosition > ballsDefYPos[i] - stepDistance + 1) {
-                        lev.getBall(x, z, y).position.y = ballsDefYPos[i]
-                    }
+                        var curPosition = lev.getBall(x, z, y).position.y;
+
+                        if (curPosition < ballsDefYPos[i] - stepDistance + 1) {
+                            lev.getBall(x, z, y).position.y = curPosition +
+                                stepDistance;
+                        }
+                        if (curPosition > ballsDefYPos[i] + stepDistance - 1) {
+                            lev.getBall(x, z, y).position.y = curPosition -
+                                stepDistance;
+                        }
+                        if (curPosition < ballsDefYPos[i] + stepDistance - 1 &&
+                            curPosition > ballsDefYPos[i] - stepDistance + 1) {
+                            lev.getBall(x, z, y).position.y = ballsDefYPos[i]
+                        }
+
                     i++;
                 }
             }
@@ -466,6 +469,8 @@
         for (var x = 0; x < lev.xsize; x++) {
             for (var z = 0; z < lev.zsize; z++) {
                 for (var y = 0; y < lev.ysize; y++) {
+
+                  if (i != 72){
 
                     //If larger than all positions, move to box;
                     if (n > positions) {
@@ -490,7 +495,9 @@
                         lev.getBall(x, z, y).position.y = newPosition
                     }
 
-                    i++;
+                  }
+
+                  i++;
                 }
             }
         }
@@ -560,6 +567,7 @@
         return currPositions;
     }
 
+
     function getCurrentFramePositions() {
         var currPositions = [];
         for (var x = 0; x < lev.xsize; x++) {
@@ -574,6 +582,31 @@
             }
         }
         return currPositions;
+    }
+
+
+
+
+    function planeFrame(position) {
+
+      var planeFrame = [];
+
+
+      i = 0; // ID
+
+      for (var x = 0; x < lev.xsize; x++) {
+          for (var z = 0; z < lev.zsize; z++) {
+              for (var y = 0; y < lev.ysize; y++) {
+
+
+                ballsDefYPos[i]; // Default Position for Ball in Box
+
+                i++;
+              }
+          }
+      }
+
+      return planeFrame;
     }
 
 
@@ -970,10 +1003,12 @@
 
     var tempX = 0,
         tempZ = 0;
+        tempY = 0;
 
     var mouseClicked = false;
 
     function onDocumentMouseDown(event) {
+
 
         // Get mouse position
         var mouseX = (event.clientX / window.innerWidth) * 2 - 1;
@@ -995,16 +1030,20 @@
 
             // Set the selection - first intersected object
             lev.selection = intersects[0].object;
-            lev.selection.material = new THREE.MeshLambertMaterial({
-                color: 0xff0000
-            });
             console.log(lev.selection.id);
 
             if (mouseClicked == false) {
                 tempX = lev.selection.position.x;
                 tempZ = lev.selection.position.z;
+                tempY = lev.selection.position.y;
                 mouseClicked = true;
             }
+
+            document.body.className = 'closedhand';
+
+            lev.selection.material = new THREE.MeshLambertMaterial({
+                color: 0xFF0000
+            });
 
             // Calculate the offset
             var intersects = raycasterDrag.intersectObject(lev.plane);
@@ -1042,7 +1081,7 @@
                         });
                     }
                     controls.enabled = false;
-                    document.body.style.cursor = 'move';
+                    document.body.className = 'openhand';
 
                 }
 
@@ -1054,7 +1093,8 @@
                 if (INTERSECTED) INTERSECTED.material = INTERSECTED.currentHex;
                 INTERSECTED = null;
                 controls.enabled = true;
-                document.body.style.cursor = 'default';
+                document.body.className = 'openhand';
+
             }
 
         }
@@ -1076,14 +1116,30 @@
             lev.selection.position.copy(intersects[0].point.sub(lev.offset));
 
             if (mouseClicked == true) {
-                lev.selection.position.x = tempX;
-                lev.selection.position.z = tempZ;
-                var tempY = parseInt(lev.selection.position.y);
-                var command = "B" + zeroFill(lev.getBallId(lev.selection), 3) + zeroFill(tempY, 3);
-                if(socket)
-                  socket.emit('ballMoved',{ID:((lev.selection.id)-5), y:tempY});
-                  socket.emit('ballY',tempY);
-                  socket.emit('ballCommand',command)
+
+              simSelect = 0;
+
+              switch (intSelect) {
+                  case 0:
+                      dragSingleBall(lev.selection);
+                      break;
+                  case 1:
+                      // Function for etc
+                      break;
+                  case 2:
+                      // Function for etc
+                      break;
+                  case 3:
+                      // Function for etc
+                      break;
+                  case 4:
+                      // Function for etc
+                      break;
+                  default:
+                      dragSingleBall(lev.selection);
+
+              }
+
             }
 
 
@@ -1096,6 +1152,8 @@
                 lev.plane.lookAt(camera.position);
             }
         }
+
+
 
 
     }
@@ -1124,13 +1182,52 @@
 
     }
 
-    function zeroFill(number, width) {
+    function transformRange(old_value, old_min, old_max, new_min, new_max) {
+     new_value = ( (old_value - old_min) / (old_max - old_min) ) * (new_max - new_min) + new_min;
+     return new_value;
+    }
+
+
+
+    function zeroFill( number , width ){
       width -= number.toString().length;
-      if(width > 0) {
-          return new Array(width + (/\./.test(number) ? 2 : 1)).join('0') + number;
+      if ( width > 0 )
+      {
+        return new Array( width + (/\./.test( number ) ? 2 : 1) ).join( '0' ) + number;
       }
       return number + ""; // always return a string
     }
+
+    function dragSingleBall(ball){
+      if (ball.position.y < 0) {ball.position.y = 0}
+      if(ball.position.y < tempY){
+        ball.material = new THREE.MeshLambertMaterial({
+            color: 0x00FFFF
+        });
+      }
+
+      if(ball.position.y > tempY){
+        ball.material = new THREE.MeshLambertMaterial({
+            color: 0x3399FF
+        });
+      }
+      ball.position.x = tempX;
+      ball.position.z = tempZ;
+      var oldY = parseInt(ball.position.y);
+      var newY = parseInt(transformRange(oldY, 0,(positions*2*posDist), 255,0));
+      var command = "B" + zeroFill(lev.getBallId(ball), 3) + zeroFill(newY, 3);
+      if(socket)
+        socket.emit('ballMoved',{ID:(lev.getBallId(ball)), y:newY});
+        // socket.emit('ballY',newY);
+        socket.emit('ballCommand',command)
+    }
+
+
+    function dragWithInterpolation(ball){
+      //Bendy plane! yay!
+    }
+
+
 
 
 
@@ -1151,5 +1248,6 @@
 
 
     <div id="logo"></div>
+
 </body>
 </html>
