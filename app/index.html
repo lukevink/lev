@@ -587,29 +587,6 @@
 
 
 
-    function planeFrame(position) {
-
-      var planeFrame = [];
-
-
-      i = 0; // ID
-
-      for (var x = 0; x < lev.xsize; x++) {
-          for (var z = 0; z < lev.zsize; z++) {
-              for (var y = 0; y < lev.ysize; y++) {
-
-
-                ballsDefYPos[i]; // Default Position for Ball in Box
-
-                i++;
-              }
-          }
-      }
-
-      return planeFrame;
-    }
-
-
 
     function genrateRandomNext() {
 
@@ -896,33 +873,41 @@
                 rayObject[3] = object3;
                 scene.add(object3);
 
-
                 break;
 
             case 5:
-                var staticFrame = [];
-                var i = 0;
-                for (var x = 0; x < lev.xsize; x++) {
-                    for (var z = 0; z < lev.zsize; z++) {
-                        for (var y = 0; y < lev.ysize; y++) {
-                            if (i%lev.ysize == 0) {
-                                staticFrame.push(-300)
-                            }
-                            else {
-                                staticFrame.push(ballsDefYPos[i]);
-                            }
-                            i++;
-                        }
-                    }
-                }
-                console.log(staticFrame)
-                moveToFrame(staticFrame);
+
                 break;
             default:
 
         }
 
 
+
+    }
+
+    function planeFrame(plane){
+
+      var staticFrame = [];
+      var i = 0;
+      for (var x = 0; x < lev.xsize; x++) {
+          for (var z = 0; z < lev.zsize; z++) {
+              for (var y = 0; y < lev.ysize; y++) {
+                  if (i%lev.ysize == 0) {
+                      staticFrame.push((lev.ysize * posDist / 2));
+                  }
+                  else {
+                      staticFrame.push(ballsRemoveYPos[i]);
+                  }
+                  i++;
+              }
+          }
+      }
+      console.log(staticFrame)
+      nextFrame = staticFrame;
+
+
+      return nextFrame;
 
     }
 
