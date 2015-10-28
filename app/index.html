@@ -900,24 +900,22 @@
                 break;
 
             case 5:
-                Planes
                 var staticFrame = [];
                 var i = 0;
                 for (var x = 0; x < lev.xsize; x++) {
                     for (var z = 0; z < lev.zsize; z++) {
                         for (var y = 0; y < lev.ysize; y++) {
-
-                            if (y == 0) {
-                                staticFrame.push(300);
-                            } else {
+                            if (i%lev.ysize == 0) {
+                                staticFrame.push(-300)
+                            }
+                            else {
                                 staticFrame.push(ballsDefYPos[i]);
                             }
-
                             i++;
                         }
                     }
                 }
-
+                console.log(staticFrame)
                 moveToFrame(staticFrame);
                 break;
             default:

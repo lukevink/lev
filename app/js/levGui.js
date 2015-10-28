@@ -99,8 +99,7 @@ window.onload = function() {
    }).name('Atom');
    setRandom.add(levGui, 'nextRandomFrame').onFinishChange(function() {
        simSelect = 4;
-       nextFrame = genrateRandomNext(); //Scans 3D Object
-    // nextFrame = mathData(1);
+       nextFrame = shapeData(5);
 
    }).name('Planes');
 
