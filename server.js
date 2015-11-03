@@ -6,7 +6,7 @@ var io = require('socket.io')(server);
 var staticRoot = path.join(__dirname+'/app/');
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort; // localize object constructor
-var arduino = new SerialPort("/dev/tty.usbmodem1421", {baudrate: 9600});
+var arduino = new SerialPort("/dev/tty.usbmodem1290581", {baudrate: 9600});
 
 var isOpen = false;
 
@@ -26,7 +26,7 @@ app.get('/mf', function(req, res){
 io.on('connection', function (socket) {
 
   socket.on('TurnMeOn', function (data) {
-    console.log(data)
+    console.log("----------- LEV SERVER STARTED -----------")
     if(isOpen)
       arduino.write("H");
   });
@@ -47,7 +47,8 @@ io.on('connection', function (socket) {
   socket.on('ballCommand', function (data) {
     if(isOpen)
       arduino.write(data);
-      console.log(data);
+      console.log(data)
+
   });
 
 

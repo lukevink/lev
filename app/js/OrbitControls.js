@@ -29,8 +29,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.target.x = 0;
 	this.target.z = 0;
 	this.target.y = orbitYPosition;
-
-
 	// center is old, deprecated; use "target" instead
 	this.center = this.target;
 
@@ -41,7 +39,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	// Limits to how far you can dolly in and out ( PerspectiveCamera only )
 	this.minDistance = 500;
-	this.maxDistance = 1500;
+	this.maxDistance = 2500;
 
 	// Limits to how far you can zoom in and out ( OrthographicCamera only )
 	this.minZoom = 1000;

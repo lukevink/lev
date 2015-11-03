@@ -53,7 +53,7 @@ window.onload = function() {
 
    var setInteraction = gui.addFolder('Interaction Options');
    setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 0; }).name('Move Single');
-   setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 1; }).name('Move All as Mesh');
+   setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 1; }).name('Move Column');
    setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 2; }).name('Pivot All ');
 
 
