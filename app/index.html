@@ -71,7 +71,7 @@
 
     wav_offset = 900;
     guiLoaded = false;
-
+    multiTempSetOnce = false;
 
 
     </script>
@@ -110,7 +110,6 @@
     document.body.appendChild(stats.domElement);
     document.body.appendChild(statsms.domElement);
     rayObject = [];
-
 
     var raycaster = new THREE.Raycaster(); //3D Array rays Intersection Point discovery
     var raycasterh = new THREE.Raycaster(); //Used to detect Hovered Ball
@@ -260,6 +259,34 @@
       return plane
     }
 
+    function in_list(needle, hay){
+        var i, len;
+
+    for (i = 0, len = hay.length; i < len; i++){
+        if (hay[i] == needle) { return true; }
+    }
+
+      return false;
+    }
+
+    InLev.prototype.getCrossA = function(n, m) {
+      var plane = lev.getPlane(n);
+      var crossA = [];
+      for (var i = 0; i < 5; i++){
+        crossA.push(plane[i+(m*5)]+5);
+      }
+      return crossA
+    }
+
+    InLev.prototype.getCrossB = function(n, m) {
+      var plane = lev.getPlane(n);
+      var crossB = [];
+      for (var i = 0; i < 5; i++){
+        crossB.push(plane[i*5]+m*5+5);
+      }
+      return crossB
+    }
+
     InLev.prototype.getBall = function(x, z, y) {
         if ((x > this.xsize) || (z > this.zsize) || (y > this.ysize) || (x < 0) ||
             (z < 0) || (y < 0))
@@ -274,8 +301,7 @@
         var column = new Array(this.ysize);
         for (var i = 0; i < column.length; i++) {
 
-            column[i] = this.balls[(x * this.zsize * this.ysize) + (z * this.ysize) +
-                i];
+            column[i] = this.balls[(x * this.zsize * this.ysize) + (z * this.ysize) + i];
 
         }
 
@@ -304,6 +330,18 @@
       for (var n = 0; n < lev.balls.length; n++) {
           if (ball == lev.getBallById(n))
               return n;
+      }
+    }
+
+
+    InLev.prototype.sendBallPositions = function() {
+      for (var n = 4; n < 5; n++) {
+        var oldY = parseInt(lev.getBallById(n).position.y);
+        var newY = parseInt(transformRange(oldY, 0,(positions*2*posDist), 0,15));
+        var command = "B" + zeroFill(n, 3) + zeroFill(newY, 3);
+        // console.log(command);
+        if(socket)
+          socket.emit('ballCommand',command)
       }
     }
 
@@ -397,6 +435,16 @@
             testcol[i].material = new THREE.MeshBasicMaterial({
                 color: 0xff0000
             });
+    }
+
+    function selectColumnByBall(ball) {
+        column = lev.getColumn(0,0);
+        // for (var i = 0; i < lev.balls.length; i++) {
+        //     if (ball.position.x == lev.getBallById(i).position.x && ball.position.y == lev.getBallById(i).position.y){
+        //       column.push(lev.getBallById(i));
+        //     }
+        // }
+      return column;
     }
 
     function selectBallById(n) {
@@ -894,7 +942,7 @@
           for (var z = 0; z < lev.zsize; z++) {
               for (var y = 0; y < lev.ysize; y++) {
                   if (i%lev.ysize == 0) {
-                      staticFrame.push((lev.ysize * posDist / 2));
+                      staticFrame.push(lev.ysize * posDist / 2);
                   }
                   else {
                       staticFrame.push(ballsRemoveYPos[i]);
@@ -938,6 +986,7 @@
 
         requestAnimationFrame(animate);
         updateScene();
+        lev.sendBallPositions();
 
         }, 1000 / 30 );
 
@@ -988,10 +1037,15 @@
         tempZ = 0;
         tempY = 0;
 
+    var tempYcolumn = [];
+        tempXcolumn = [];
+        tempZcolumn = [];
+
     var mouseClicked = false;
 
     function onDocumentMouseDown(event) {
 
+        multiTempSetOnce = false;
 
         // Get mouse position
         var mouseX = (event.clientX / window.innerWidth) * 2 - 1;
@@ -1013,7 +1067,6 @@
 
             // Set the selection - first intersected object
             lev.selection = intersects[0].object;
-            console.log(lev.selection.id);
 
             if (mouseClicked == false) {
                 tempX = lev.selection.position.x;
@@ -1091,29 +1144,30 @@
         // Set the raycasterDrag position
         raycasterDrag.set(camera.position, vector.sub(camera.position).normalize());
 
+
         if (lev.selection) {
             // Check the position where the plane is intersected
             var intersects = raycasterDrag.intersectObject(lev.plane);
 
             // Reposition the object based on the intersection point with the plane
-            lev.selection.position.copy(intersects[0].point.sub(lev.offset));
 
             if (mouseClicked == true) {
 
               simSelect = 0;
+              lev.selection.position.copy(intersects[0].point.sub(lev.offset));
 
               switch (intSelect) {
                   case 0:
                       dragSingleBall(lev.selection);
                       break;
                   case 1:
-                      // Function for etc
+                      // dragColumn(lev.selection);
                       break;
                   case 2:
-                      // Function for etc
+                      dragPlane(lev.selection);
                       break;
                   case 3:
-                      // Function for etc
+                      planeInterpolation(lev.selection)
                       break;
                   case 4:
                       // Function for etc
@@ -1146,6 +1200,7 @@
         controls.enabled = true;
         lev.selection = null;
         mouseClicked = false;
+        multiTempSetOnce = false;
     }
 
 
@@ -1184,30 +1239,208 @@
     function dragSingleBall(ball){
       if (ball.position.y < 0) {ball.position.y = 0}
       if(ball.position.y < tempY){
-        ball.material = new THREE.MeshLambertMaterial({
-            color: 0x00FFFF
-        });
+        ball.material = new THREE.MeshLambertMaterial({    color: 0x00FFFF   });
       }
 
       if(ball.position.y > tempY){
-        ball.material = new THREE.MeshLambertMaterial({
-            color: 0x3399FF
-        });
+        ball.material = new THREE.MeshLambertMaterial({    color: 0x3399FF    });
       }
       ball.position.x = tempX;
       ball.position.z = tempZ;
-      var oldY = parseInt(ball.position.y);
-      var newY = parseInt(transformRange(oldY, 0,(positions*2*posDist), 255,0));
-      var command = "B" + zeroFill(lev.getBallId(ball), 3) + zeroFill(newY, 3);
-      if(socket)
-        socket.emit('ballMoved',{ID:(lev.getBallId(ball)), y:newY});
-        // socket.emit('ballY',newY);
-        socket.emit('ballCommand',command)
+
     }
 
 
-    function dragWithInterpolation(ball){
-      //Bendy plane! yay!
+    function dragPlane(ball){
+      if (ball.position.y < 0) {ball.position.y = 0}
+      ball.position.x = tempX;
+      ball.position.z = tempZ;
+      plane = lev.getPlane(ball.id%lev.ysize);
+      area = lev.xsize*lev.zsize;
+      console.log(area)
+      for (var i = 0; i < area; i++){
+        ball_in_plane = lev.getBallById(plane[i]);
+        ball_in_plane.position.y = ball.position.y;
+      }
+    }
+
+    function planeInterpolation(ball){
+      console.log(ball.id);
+      if (ball.position.y < 0) {ball.position.y = 0}
+      plane_id = ball.id%lev.ysize;
+      displacement = ball.position.y - tempY;
+      ball.position.x = tempX;
+      ball.position.z = tempZ;
+      plane = lev.getPlane(plane_id);
+      area = lev.xsize*lev.zsize;
+      // Rows
+      crossA1 = lev.getCrossA(plane_id, 0);
+      crossA2 = lev.getCrossA(plane_id, 1);
+      crossA3 = lev.getCrossA(plane_id, 2);
+      crossA4 = lev.getCrossA(plane_id, 3);
+      crossA5 = lev.getCrossA(plane_id, 4);
+      // Columns
+      crossB1 = lev.getCrossB(plane_id, 0);
+      crossB2 = lev.getCrossB(plane_id, 1);
+      crossB3 = lev.getCrossB(plane_id, 2);
+      crossB4 = lev.getCrossB(plane_id, 3);
+      crossB5 = lev.getCrossB(plane_id, 4);
+      for (var i = 0; i < 5; i++){
+        for (var j = 0; j < area; j++){
+          ball_in_plane = lev.getBallById(plane[j]);
+          if (ball_in_plane.id != ball.id){
+            if (ball.id == crossA1[i]){
+              //edge1 case
+                if (in_list(ball_in_plane.id, crossA1)){
+                  ball_in_plane.position.y = ball.position.y;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossA2)){
+                  ball_in_plane.position.y = ball.position.y*.5;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossA3)){
+                  ball_in_plane.position.y = ball.position.y*.25;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossA4)){
+                  ball_in_plane.position.y = ball.position.y*.125;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossA5)){
+                  ball_in_plane.position.y = ball.position.y*.0625;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+              }
+        if (ball.id == crossB1[i]){
+          //edge2 case
+                if (in_list(ball_in_plane.id, crossB1)){
+                  ball_in_plane.position.y = ball.position.y;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossB2)){
+                  ball_in_plane.position.y = ball.position.y*.5;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossB3)){
+                  ball_in_plane.position.y = ball.position.y*.25;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossB4)){
+                  ball_in_plane.position.y = ball.position.y*.125;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossB5)){
+                  ball_in_plane.position.y = ball.position.y*.0625;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+              }
+        if (ball.id == crossA5[i]){
+          //edge3 case
+                if (in_list(ball_in_plane.id, crossA5)){
+                  ball_in_plane.position.y = ball.position.y;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossA4)){
+                  ball_in_plane.position.y = ball.position.y*.5;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossA3)){
+                  ball_in_plane.position.y = ball.position.y*.25;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossA2)){
+                  ball_in_plane.position.y = ball.position.y*.125;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossA1)){
+                  ball_in_plane.position.y = ball.position.y*.0625;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+              }
+        if (ball.id == crossB5[i]){
+          //edge4 case
+                if (in_list(ball_in_plane.id, crossB5)){
+                  ball_in_plane.position.y = ball.position.y;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossB4)){
+                  ball_in_plane.position.y = ball.position.y*.5;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossB3)){
+                  ball_in_plane.position.y = ball.position.y*.25;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossB2)){
+                  ball_in_plane.position.y = ball.position.y*.125;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+                if (in_list(ball_in_plane.id, crossB1)){
+                  ball_in_plane.position.y = ball.position.y*.0625;
+                  if (ball_in_plane.position.y < 0) {ball_in_plane.position.y = 0}
+                }
+              }
+          }
+        }
+      }
+    }
+
+
+    //
+
+    function dragColumn(ball){
+
+      var column = selectColumnByBall(ball);
+      console.log(column);
+
+      //FIX THIS SHIT.
+      if(multiTempSetOnce == false){
+        tempY = ball.position.y;
+        for (var i = 0; i < 5; i++) {
+          tempYcolumn[i] = column[i].position.y;
+          tempXcolumn[i] = column[i].position.x;
+          tempZcolumn[i] = column[i].position.z;
+          console.log(tempYcolumn[i]);
+        }
+
+        multiTempSetOnce = true;
+      }
+
+      for (var i = 0; i < 5; i++) {
+        if (column[i].position.y < 0) {column[i].position.y = 0}
+
+
+        if(column[i].position.y < tempYcolumn[i]){
+          column[i].material = new THREE.MeshLambertMaterial({
+              color: 0x00FFFF
+          });
+        }
+
+        if(column[i].position.y > tempYcolumn[i]){
+          column[i].material = new THREE.MeshLambertMaterial({
+              color: 0x3399FF
+          });
+        }
+
+        column[i].position.x = tempXcolumn[i];
+        column[i].position.z = tempZcolumn[i];
+        ball.position.x = tempXcolumn[i];
+        ball.position.z = tempZcolumn[i];
+
+
+          column[i].position.y = (column[i].position.y + (tempYcolumn[i] + tempY));
+
+
+        var oldY = parseInt(column[i].position.y);
+        var newY = parseInt(transformRange(oldY, 0,(positions*2*posDist), 0,15));
+        var command = "B" + zeroFill(lev.getBallId(column[i]), 3) + zeroFill(newY, 3);
+        // if(socket)
+        //   socket.emit('ballMoved',{ID:(lev.getBallId(column[i])), y:newY});
+        //   // socket.emit('ballY',newY);
+        //   socket.emit('ballCommand',command)
+      }
+
     }
 
 

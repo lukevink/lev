@@ -54,7 +54,8 @@ window.onload = function() {
    var setInteraction = gui.addFolder('Interaction Options');
    setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 0; }).name('Move Single');
    setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 1; }).name('Move Column');
-   setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 2; }).name('Pivot All ');
+   setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 2; }).name('Move All ');
+   setInteraction.add(levGui, 'setInteractionMethod').onFinishChange(function() { intSelect = 3; }).name('Bend All ');
 
 
    var setWav = gui.addFolder('Wave App Options');
