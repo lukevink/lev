@@ -11,9 +11,9 @@ posDist = 150;
 ballSize = 50;
 theta = 0;
 
-widthX = (columns-1)*columnDist;
-widthZ = (columns-1)*columnDist;
-heightY = (positions-1)*posDist;
+widthX = (columns - 1) * columnDist;
+widthZ = (columns - 1) * columnDist;
+heightY = (positions - 1) * posDist;
 
 // Orbit Controls
 orbitYPosition = 500;
@@ -24,11 +24,14 @@ guiLoaded = false;
 multiTempSetOnce = false;
 
 //Web Socket client
-if(typeof(io) != "undefined"){
-  var socket = io.connect('http://localhost:3000');
-  socket.on('connect', function (data) {
-      socket.emit('TurnMeOn',{x:1, y:2});
-  });
+if (typeof(io) != "undefined") {
+    var socket = io.connect('http://localhost:3000');
+    socket.on('connect', function(data) {
+        socket.emit('TurnMeOn', {
+            x: 1,
+            y: 2
+        });
+    });
 }
 
 //STATS
@@ -79,7 +82,9 @@ function InLev(xsize, zsize, ysize, scene) {
     //  var geometry = new THREE.BoxGeometry( ballSize*2, ballSize*2, ballSize*2 );
     var geometry = new THREE.SphereGeometry(ballSize, ballSize, ballSize);
     //          var material = new THREE.MeshNormalMaterial( { transparent: true, opacity: 0.5 } );
-    var material = new THREE.MeshLambertMaterial({  color: 0xcccccc });
+    var material = new THREE.MeshLambertMaterial({
+        color: 0xcccccc
+    });
 
     makeBalls(this.xsize, this.zsize, this.columnDistance, geometry,
         material, this.allBalls, this.balls);
@@ -187,41 +192,43 @@ InLev.prototype.getBallById = function(n) {
 }
 
 InLev.prototype.getPlane = function(n) {
-  var plane = [];
-    for (var i = 0; i < this.ysize*this.zsize*this.xsize; i++){
-      if (i%this.ysize == n){
-        plane.push(i)
-      }
+    var plane = [];
+    for (var i = 0; i < this.ysize * this.zsize * this.xsize; i++) {
+        if (i % this.ysize == n) {
+            plane.push(i)
+        }
     }
-  return plane
+    return plane
 }
 
-function in_list(needle, hay){
+function in_list(needle, hay) {
     var i, len;
 
-for (i = 0, len = hay.length; i < len; i++){
-    if (hay[i] == needle) { return true; }
-}
+    for (i = 0, len = hay.length; i < len; i++) {
+        if (hay[i] == needle) {
+            return true;
+        }
+    }
 
-  return false;
+    return false;
 }
 
 InLev.prototype.getCrossA = function(n, m) {
-  var plane = lev.getPlane(n);
-  var crossA = [];
-  for (var i = 0; i < 5; i++){
-    crossA.push(plane[i+(m*5)]+5);
-  }
-  return crossA
+    var plane = lev.getPlane(n);
+    var crossA = [];
+    for (var i = 0; i < 5; i++) {
+        crossA.push(plane[i + (m * 5)] + 5);
+    }
+    return crossA
 }
 
 InLev.prototype.getCrossB = function(n, m) {
-  var plane = lev.getPlane(n);
-  var crossB = [];
-  for (var i = 0; i < 5; i++){
-    crossB.push(plane[i*5]+m*5+5);
-  }
-  return crossB
+    var plane = lev.getPlane(n);
+    var crossB = [];
+    for (var i = 0; i < 5; i++) {
+        crossB.push(plane[i * 5] + m * 5 + 5);
+    }
+    return crossB
 }
 
 InLev.prototype.getBall = function(x, z, y) {
@@ -264,22 +271,22 @@ InLev.prototype.getBallIdXYZ = function(x, z, y) {
 }
 
 InLev.prototype.getBallId = function(ball) {
-  for (var n = 0; n < lev.balls.length; n++) {
-      if (ball == lev.getBallById(n))
-          return n;
-  }
+    for (var n = 0; n < lev.balls.length; n++) {
+        if (ball == lev.getBallById(n))
+            return n;
+    }
 }
 
 
 InLev.prototype.sendBallPositions = function() {
-  for (var n = 4; n < 5; n++) {
-    var oldY = parseInt(lev.getBallById(n).position.y);
-    var newY = parseInt(transformRange(oldY, 0,(positions*2*posDist), 0,15));
-    var command = "B" + zeroFill(n, 3) + zeroFill(newY, 3);
-    // console.log(command);
-    if(socket)
-      socket.emit('ballCommand',command)
-  }
+    for (var n = 4; n < 5; n++) {
+        var oldY = parseInt(lev.getBallById(n).position.y);
+        var newY = parseInt(transformRange(oldY, 0, (positions * 2 * posDist), 0, 15));
+        var command = "B" + zeroFill(n, 3) + zeroFill(newY, 3);
+        // console.log(command);
+        if (socket)
+            socket.emit('ballCommand', command)
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -375,13 +382,13 @@ function selectColumn(x, z) {
 }
 
 function selectColumnByBall(ball) {
-    column = lev.getColumn(0,0);
+    column = lev.getColumn(0, 0);
     // for (var i = 0; i < lev.balls.length; i++) {
     //     if (ball.position.x == lev.getBallById(i).position.x && ball.position.y == lev.getBallById(i).position.y){
     //       column.push(lev.getBallById(i));
     //     }
     // }
-  return column;
+    return column;
 }
 
 function selectBallById(n) {
@@ -398,9 +405,9 @@ function selectBall(x, z, y) {
 }
 
 function selectPlane(n) {
-  for (var i = 0; i < lev.getPlane(n).length; i++){
-      selectBallById(lev.getPlane(n)[i])
-  }
+    for (var i = 0; i < lev.getPlane(n).length; i++) {
+        selectBallById(lev.getPlane(n)[i])
+    }
 }
 
 function clearSelect() {
@@ -426,20 +433,20 @@ function moveAlltoDefault() {
         for (var z = 0; z < lev.zsize; z++) {
             for (var y = 0; y < lev.ysize; y++) {
 
-                    var curPosition = lev.getBall(x, z, y).position.y;
+                var curPosition = lev.getBall(x, z, y).position.y;
 
-                    if (curPosition < ballsDefYPos[i] - stepDistance + 1) {
-                        lev.getBall(x, z, y).position.y = curPosition +
-                            stepDistance;
-                    }
-                    if (curPosition > ballsDefYPos[i] + stepDistance - 1) {
-                        lev.getBall(x, z, y).position.y = curPosition -
-                            stepDistance;
-                    }
-                    if (curPosition < ballsDefYPos[i] + stepDistance - 1 &&
-                        curPosition > ballsDefYPos[i] - stepDistance + 1) {
-                        lev.getBall(x, z, y).position.y = ballsDefYPos[i]
-                    }
+                if (curPosition < ballsDefYPos[i] - stepDistance + 1) {
+                    lev.getBall(x, z, y).position.y = curPosition +
+                        stepDistance;
+                }
+                if (curPosition > ballsDefYPos[i] + stepDistance - 1) {
+                    lev.getBall(x, z, y).position.y = curPosition -
+                        stepDistance;
+                }
+                if (curPosition < ballsDefYPos[i] + stepDistance - 1 &&
+                    curPosition > ballsDefYPos[i] - stepDistance + 1) {
+                    lev.getBall(x, z, y).position.y = ballsDefYPos[i]
+                }
 
                 i++;
             }
@@ -455,34 +462,34 @@ function moveAlltoPos(n) {
         for (var z = 0; z < lev.zsize; z++) {
             for (var y = 0; y < lev.ysize; y++) {
 
-              if (i != 72){
+                if (i != 72) {
 
-                //If larger than all positions, move to box;
-                if (n > positions) {
-                    var newPosition = ballsDefYPos[i] + (positions + 1) *
-                        posDist - (ballsDefYPos[i] / (lev.ysize / 1.7));
-                } else {
-                    var newPosition = (lev.ysize + 1) * posDist +
-                        ballsDefYPos[i];
+                    //If larger than all positions, move to box;
+                    if (n > positions) {
+                        var newPosition = ballsDefYPos[i] + (positions + 1) *
+                            posDist - (ballsDefYPos[i] / (lev.ysize / 1.7));
+                    } else {
+                        var newPosition = (lev.ysize + 1) * posDist +
+                            ballsDefYPos[i];
+                    }
+
+                    var curPosition = lev.getBallById(i).position.y;
+                    if (curPosition < newPosition - stepDistance + 1) {
+                        lev.getBall(x, z, y).position.y = curPosition +
+                            stepDistance;
+                    }
+                    if (curPosition > newPosition + stepDistance - 1) {
+                        lev.getBall(x, z, y).position.y = curPosition -
+                            stepDistance;
+                    }
+                    if (curPosition < newPosition + stepDistance - 1 &&
+                        curPosition > newPosition - stepDistance + 1) {
+                        lev.getBall(x, z, y).position.y = newPosition
+                    }
+
                 }
 
-                var curPosition = lev.getBallById(i).position.y;
-                if (curPosition < newPosition - stepDistance + 1) {
-                    lev.getBall(x, z, y).position.y = curPosition +
-                        stepDistance;
-                }
-                if (curPosition > newPosition + stepDistance - 1) {
-                    lev.getBall(x, z, y).position.y = curPosition -
-                        stepDistance;
-                }
-                if (curPosition < newPosition + stepDistance - 1 &&
-                    curPosition > newPosition - stepDistance + 1) {
-                    lev.getBall(x, z, y).position.y = newPosition
-                }
-
-              }
-
-              i++;
+                i++;
             }
         }
     }
@@ -633,333 +640,332 @@ function genrateRandomNext() {
 
 
 
-      // HIGH LEVEL APPS / FUNCTIONS
+// HIGH LEVEL APPS / FUNCTIONS
 
-      function setAppParameters() {
+function setAppParameters() {
 
-          //APP/FUNCTION GLOBAL PARAMETERS
-          //WaveForm
-          wav_crests = 4;
-          wav_offset = 40 * lev.ysize;
-          wav_amplitude = 0.05;
-          normalizedPhase = 0;
+    //APP/FUNCTION GLOBAL PARAMETERS
+    //WaveForm
+    wav_crests = 4;
+    wav_offset = 40 * lev.ysize;
+    wav_amplitude = 0.05;
+    normalizedPhase = 0;
 
-          //3D Object
-          objectRender = 0;
+    //3D Object
+    objectRender = 0;
 
-      }
+}
 
-      function wave() {
+function wave() {
 
-          var centerX = (lev.xsize - 1) / 2;
-          var centerZ = (lev.zsize - 1) / 2;
-          if (centerX < 1) centerX = 1;
-          if (centerZ < 1) centerZ = 1;
+    var centerX = (lev.xsize - 1) / 2;
+    var centerZ = (lev.zsize - 1) / 2;
+    if (centerX < 1) centerX = 1;
+    if (centerZ < 1) centerZ = 1;
 
-          var offset = wav_offset;
-          var crests = wav_crests;
-          normalizedPhase = normalizedPhase + ballSpeed;
-          var phase = 2 * Math.PI * normalizedPhase;
+    var offset = wav_offset;
+    var crests = wav_crests;
+    normalizedPhase = normalizedPhase + ballSpeed;
+    var phase = 2 * Math.PI * normalizedPhase;
 
-          var maxDistance = Math.sqrt((centerX - 0) * (centerX - 0) + (centerZ -
-              0) * (centerZ - 0));
-          var distanceScalar = Math.PI * (crests * 2 - 1) / maxDistance;
-          var distanceOffset = 2 * Math.PI;
-          var maxAmplitude = wav_amplitude;
-          var heightScalar = 100.00 / (2 * maxAmplitude);
+    var maxDistance = Math.sqrt((centerX - 0) * (centerX - 0) + (centerZ -
+        0) * (centerZ - 0));
+    var distanceScalar = Math.PI * (crests * 2 - 1) / maxDistance;
+    var distanceOffset = 2 * Math.PI;
+    var maxAmplitude = wav_amplitude;
+    var heightScalar = 100.00 / (2 * maxAmplitude);
 
-          var i = 0;
-          for (var x = 0; x < lev.xsize; x++) {
-              for (var z = 0; z < lev.zsize; z++) {
-                  for (var y = 0; y < lev.ysize; y++) {
-                      var defp = ballsDefYPos[i];
-                      var d = Math.sqrt((centerX - x) * (centerX - x) + (centerZ -
-                          z) * (centerZ - z));
-                      distance = distanceScalar * d + distanceOffset;
-                      var height = Math.sin(distance - phase) / distance;
-                      lev.getBallById(i).position.y = heightScalar * height +
-                          defp - offset;
-                      i++;
-                  }
-              }
-          }
-
-      }
-
-      //SCAN 3D OBJECT TO DETERMINE INTERSECTION POINTS TO CREATE NEXT FRAME:
-      function shapeData(object) {
-
-              remove(rayObject);
-              rayObject = [];
-
-              //Draw the object
-              drawStaticObject(object);
-
-              var rayFrame = [];
-              var remainder = [];
-
-              rays = new Array(columns * columns);
-              lines = new Array(columns * columns);
-
-              var i = 0;
-              var y = (posDist * positions);
-
-              for (var x = 0; x < columns; x++) {
-                  for (var z = 0; z < columns; z++) {
-
-                      yP = 0;
-                      xP = Math.floor(i / columns) * columnDist - ((columnDist * columns) / 2) + (columnDist / 2);
-                      zP = (i % columns) * columnDist - ((columnDist * columns) / 2) + (columnDist / 2);
-
-                      var startPoint = new THREE.Vector3(xP, yP, zP);
-                      var direction = new THREE.Vector3(xP, (yP + heightY), zP);
-                      var directionVector = direction.sub(startPoint);
-                      var ray = new THREE.Raycaster(startPoint, direction.normalize());
-                      scene.updateMatrixWorld();
-                      var rayIntersects = ray.intersectObjects(rayObject, true);
-
-
-                      for (var r = 0; r < positions; r++) {
-                          if (typeof rayIntersects[r] != "undefined") {
-                              rayFrame.push(rayIntersects[r].point.y);
-
-                          } else {
-                              rayFrame.push(5000);
-                          }
-                      }
-
-                      var startPoint = new THREE.Vector3(xP, yP, zP);
-                      var direction = new THREE.Vector3(xP, (yP - 4000), zP);
-                      var directionVector = direction.sub(startPoint);
-                      var ray = new THREE.Raycaster(startPoint, direction.normalize());
-
-                      i++;
-                  }
-              }
-
-              remove(rayObject);
-
-              return rayFrame;
-          } //END shapeData
-
-
-
-
-      function drawStaticObject(obj) {
-
-          objectMat = new THREE.MeshBasicMaterial({
-              transparent: true,
-              opacity: 0.1
-          });
-
-          switch (obj) {
-              case 0:
-                  //Sphere
-                  var object = new THREE.Mesh(new THREE.SphereGeometry(((
-                          positions / 2) * posDist) - 30, 100, 100),
-                      objectMat);
-                  object.position.y = ((positions + 0.5) * posDist) / 2 - (
-                      posDist / 2);
-                  object.position.x = ((columns * columnDist) / 2) - ((columnDist *
-                      columns) / 2);
-                  object.position.z = ((columns * columnDist) / 2) - ((columnDist *
-                      columns) / 2);
-                  object.overdraw = true;
-                  object.material.side = THREE.DoubleSide;
-                  rayObject[0] = object;
-                  scene.add(object);
-                  break;
-              case 1:
-                  //Cube
-                  for (i = 0; i < 4; i++) {
-                      var object = new THREE.Mesh(new THREE.BoxGeometry((
-                          positions - 2.5) * posDist, posDist, (
-                          positions - 2.5) * posDist), objectMat);
-                      object.position.y = (positions * posDist) / 4 - (posDist /
-                          2) + (i * posDist * 2);
-                      object.position.x = ((columns * columnDist) / 2) - ((
-                          columnDist * columns) / 2);
-                      object.position.z = ((columns * columnDist) / 2) - ((
-                          columnDist * columns) / 2);
-                      object.overdraw = true;
-                      object.material.side = THREE.DoubleSide;
-                      rayObject[i] = object;
-                      scene.add(object);
-                  }
-                  break;
-              case 2:
-                  //Helix
-                  extrudePath = new helixCurve();
-                  var segments = 400;
-                  var closed = false;
-                  var debug = false;
-                  var radiusSegments = 12;
-                  var geometry = new THREE.TubeGeometry(extrudePath, segments, 50,
-                      radiusSegments, closed);
-                  object = new THREE.Mesh(geometry, objectMat);
-                  object.rotateX(Math.PI / 1.5);
-                  object.position.y = (positions / 1.3) * posDist;
-                  object.position.z = -(columns / 3) * columnDist;
-                  object.overdraw = true;
-                  object.material.side = THREE.DoubleSide;
-                  rayObject[0] = object;
-                  scene.add(object);
-                  break;
-              case 3:
-                  //torus
-                  var geometry = new THREE.TorusGeometry(widthX / 2.2, 150, 16,
-                      100);
-                  var object = new THREE.Mesh(geometry, objectMat);
-                  object.rotateX(Math.PI / 3);
-                  object.position.y = (positions / 2) * posDist;
-                  object.overdraw = true;
-                  object.material.side = THREE.DoubleSide;
-                  rayObject[0] = object;
-                  scene.add(object);
-                  break
-              case 4:
-                  //atom
-                  var geometry = new THREE.TorusGeometry(widthX / 2.2, 150, 16,
-                      100);
-                  var object = new THREE.Mesh(geometry, objectMat);
-                  object.rotateX(Math.PI * 0.30);
-                  object.position.y = (positions / 2) * posDist;
-                  object.overdraw = true;
-                  object.material.side = THREE.DoubleSide;
-                  rayObject[0] = object;
-                  scene.add(object);
-
-                  var object1 = new THREE.Mesh(geometry, objectMat);
-                  object1.rotateX(Math.PI / 1.35);
-                  object1.position.y = (positions / 2) * posDist;
-                  object1.overdraw = true;
-                  object1.material.side = THREE.DoubleSide;
-                  rayObject[1] = object1;
-                  scene.add(object1);
-
-                  var object2 = new THREE.Mesh(geometry, objectMat);
-                  object2.position.y = (positions / 2) * posDist;
-                  object2.overdraw = true;
-                  object2.material.side = THREE.DoubleSide;
-                  rayObject[2] = object2;
-                  scene.add(object2);
-
-                  var object3 = new THREE.Mesh(new THREE.SphereGeometry((
-                      positions * posDist) - ((positions - (positions /
-                      10)) * posDist), 100, 100), objectMat);
-                  object3.position.y = ((positions + 0.5) * posDist) / 2 - (
-                      posDist / 2);
-                  object3.position.x = ((columns * columnDist) / 2) - ((
-                      columnDist * columns) / 2);
-                  object3.position.z = ((columns * columnDist) / 2) - ((
-                      columnDist * columns) / 2);
-                  object3.overdraw = true;
-                  object3.material.side = THREE.DoubleSide;
-                  rayObject[3] = object3;
-                  scene.add(object3);
-
-                  break;
-
-              case 5:
-
-                  break;
-              default:
-
-          }
-
-
-
-      }
-
-      function planeFrame(plane){
-
-        var staticFrame = [];
-        var i = 0;
-        for (var x = 0; x < lev.xsize; x++) {
-            for (var z = 0; z < lev.zsize; z++) {
-                for (var y = 0; y < lev.ysize; y++) {
-                    if (i%lev.ysize == 0) {
-                        staticFrame.push(lev.ysize * posDist / 2);
-                    }
-                    else {
-                        staticFrame.push(ballsRemoveYPos[i]);
-                    }
-                    i++;
-                }
+    var i = 0;
+    for (var x = 0; x < lev.xsize; x++) {
+        for (var z = 0; z < lev.zsize; z++) {
+            for (var y = 0; y < lev.ysize; y++) {
+                var defp = ballsDefYPos[i];
+                var d = Math.sqrt((centerX - x) * (centerX - x) + (centerZ -
+                    z) * (centerZ - z));
+                distance = distanceScalar * d + distanceOffset;
+                var height = Math.sin(distance - phase) / distance;
+                lev.getBallById(i).position.y = heightScalar * height +
+                    defp - offset;
+                i++;
             }
         }
-        console.log(staticFrame)
-        nextFrame = staticFrame;
+    }
+
+}
+
+//SCAN 3D OBJECT TO DETERMINE INTERSECTION POINTS TO CREATE NEXT FRAME:
+function shapeData(object) {
+
+        remove(rayObject);
+        rayObject = [];
+
+        //Draw the object
+        drawStaticObject(object);
+
+        var rayFrame = [];
+        var remainder = [];
+
+        rays = new Array(columns * columns);
+        lines = new Array(columns * columns);
+
+        var i = 0;
+        var y = (posDist * positions);
+
+        for (var x = 0; x < columns; x++) {
+            for (var z = 0; z < columns; z++) {
+
+                yP = 0;
+                xP = Math.floor(i / columns) * columnDist - ((columnDist * columns) / 2) + (columnDist / 2);
+                zP = (i % columns) * columnDist - ((columnDist * columns) / 2) + (columnDist / 2);
+
+                var startPoint = new THREE.Vector3(xP, yP, zP);
+                var direction = new THREE.Vector3(xP, (yP + heightY), zP);
+                var directionVector = direction.sub(startPoint);
+                var ray = new THREE.Raycaster(startPoint, direction.normalize());
+                scene.updateMatrixWorld();
+                var rayIntersects = ray.intersectObjects(rayObject, true);
 
 
-        return nextFrame;
+                for (var r = 0; r < positions; r++) {
+                    if (typeof rayIntersects[r] != "undefined") {
+                        rayFrame.push(rayIntersects[r].point.y);
 
-      }
+                    } else {
+                        rayFrame.push(5000);
+                    }
+                }
 
-      // extrudePath, Helix Curve
+                var startPoint = new THREE.Vector3(xP, yP, zP);
+                var direction = new THREE.Vector3(xP, (yP - 4000), zP);
+                var directionVector = direction.sub(startPoint);
+                var ray = new THREE.Raycaster(startPoint, direction.normalize());
 
-      helixCurve = THREE.Curve.create(function() {},
-          function(t) {
-              var a = 500; // radius
-              var b = 1500; //height
-              var t2 = 0.3 * Math.PI * t * b / 50;
-              var tx = Math.cos(t2) * a,
-                  tz = Math.sin(t2) * a,
-                  ty = b * t;
+                i++;
+            }
+        }
 
-              return new THREE.Vector3(tx, ty, tz);
-          });
+        remove(rayObject);
 
-
-      ////////////////////////////////////////////////////////////////////////////////
-
-      function animate() {
-
-          stats.begin();
-          statsms.begin();
-          ////////////////////////////////////////
-
-          setTimeout( function() {
-
-          requestAnimationFrame(animate);
-          updateScene();
-          lev.sendBallPositions();
-
-          }, 1000 / 30 );
-
-          render();
-
-          ////////////////////////////////////////
-          stats.end();
-          statsms.end();
-
-      }
-
-      function render() {
-          var timer = Date.now() * 0.0001;
-          renderer.render(scene, camera);
-      }
-
-      function updateScene() {
-          switch (simSelect) {
-              case 0:
-                  //
-                  break;
-              case 1:
-                  wave();
-                  break;
-              case 2:
-                  moveAlltoPos(positions + 1);
-                  break;
-              case 3:
-                  moveAlltoDefault();
-                  break;
-              case 4:
-                  moveToFrame(nextFrame);
-                  break;
-              default:
-
-          }
+        return rayFrame;
+    } //END shapeData
 
 
-      }
+
+
+function drawStaticObject(obj) {
+
+    objectMat = new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: 0.1
+    });
+
+    switch (obj) {
+        case 0:
+            //Sphere
+            var object = new THREE.Mesh(new THREE.SphereGeometry(((
+                    positions / 2) * posDist) - 30, 100, 100),
+                objectMat);
+            object.position.y = ((positions + 0.5) * posDist) / 2 - (
+                posDist / 2);
+            object.position.x = ((columns * columnDist) / 2) - ((columnDist *
+                columns) / 2);
+            object.position.z = ((columns * columnDist) / 2) - ((columnDist *
+                columns) / 2);
+            object.overdraw = true;
+            object.material.side = THREE.DoubleSide;
+            rayObject[0] = object;
+            scene.add(object);
+            break;
+        case 1:
+            //Cube
+            for (i = 0; i < 4; i++) {
+                var object = new THREE.Mesh(new THREE.BoxGeometry((
+                    positions - 2.5) * posDist, posDist, (
+                    positions - 2.5) * posDist), objectMat);
+                object.position.y = (positions * posDist) / 4 - (posDist /
+                    2) + (i * posDist * 2);
+                object.position.x = ((columns * columnDist) / 2) - ((
+                    columnDist * columns) / 2);
+                object.position.z = ((columns * columnDist) / 2) - ((
+                    columnDist * columns) / 2);
+                object.overdraw = true;
+                object.material.side = THREE.DoubleSide;
+                rayObject[i] = object;
+                scene.add(object);
+            }
+            break;
+        case 2:
+            //Helix
+            extrudePath = new helixCurve();
+            var segments = 400;
+            var closed = false;
+            var debug = false;
+            var radiusSegments = 12;
+            var geometry = new THREE.TubeGeometry(extrudePath, segments, 50,
+                radiusSegments, closed);
+            object = new THREE.Mesh(geometry, objectMat);
+            object.rotateX(Math.PI / 1.5);
+            object.position.y = (positions / 1.3) * posDist;
+            object.position.z = -(columns / 3) * columnDist;
+            object.overdraw = true;
+            object.material.side = THREE.DoubleSide;
+            rayObject[0] = object;
+            scene.add(object);
+            break;
+        case 3:
+            //torus
+            var geometry = new THREE.TorusGeometry(widthX / 2.2, 150, 16,
+                100);
+            var object = new THREE.Mesh(geometry, objectMat);
+            object.rotateX(Math.PI / 3);
+            object.position.y = (positions / 2) * posDist;
+            object.overdraw = true;
+            object.material.side = THREE.DoubleSide;
+            rayObject[0] = object;
+            scene.add(object);
+            break
+        case 4:
+            //atom
+            var geometry = new THREE.TorusGeometry(widthX / 2.2, 150, 16,
+                100);
+            var object = new THREE.Mesh(geometry, objectMat);
+            object.rotateX(Math.PI * 0.30);
+            object.position.y = (positions / 2) * posDist;
+            object.overdraw = true;
+            object.material.side = THREE.DoubleSide;
+            rayObject[0] = object;
+            scene.add(object);
+
+            var object1 = new THREE.Mesh(geometry, objectMat);
+            object1.rotateX(Math.PI / 1.35);
+            object1.position.y = (positions / 2) * posDist;
+            object1.overdraw = true;
+            object1.material.side = THREE.DoubleSide;
+            rayObject[1] = object1;
+            scene.add(object1);
+
+            var object2 = new THREE.Mesh(geometry, objectMat);
+            object2.position.y = (positions / 2) * posDist;
+            object2.overdraw = true;
+            object2.material.side = THREE.DoubleSide;
+            rayObject[2] = object2;
+            scene.add(object2);
+
+            var object3 = new THREE.Mesh(new THREE.SphereGeometry((
+                positions * posDist) - ((positions - (positions /
+                10)) * posDist), 100, 100), objectMat);
+            object3.position.y = ((positions + 0.5) * posDist) / 2 - (
+                posDist / 2);
+            object3.position.x = ((columns * columnDist) / 2) - ((
+                columnDist * columns) / 2);
+            object3.position.z = ((columns * columnDist) / 2) - ((
+                columnDist * columns) / 2);
+            object3.overdraw = true;
+            object3.material.side = THREE.DoubleSide;
+            rayObject[3] = object3;
+            scene.add(object3);
+
+            break;
+
+        case 5:
+
+            break;
+        default:
+
+    }
+
+
+
+}
+
+function planeFrame(plane) {
+
+    var staticFrame = [];
+    var i = 0;
+    for (var x = 0; x < lev.xsize; x++) {
+        for (var z = 0; z < lev.zsize; z++) {
+            for (var y = 0; y < lev.ysize; y++) {
+                if (i % lev.ysize == 0) {
+                    staticFrame.push(lev.ysize * posDist / 2);
+                } else {
+                    staticFrame.push(ballsRemoveYPos[i]);
+                }
+                i++;
+            }
+        }
+    }
+    console.log(staticFrame)
+    nextFrame = staticFrame;
+
+
+    return nextFrame;
+
+}
+
+// extrudePath, Helix Curve
+
+helixCurve = THREE.Curve.create(function() {},
+    function(t) {
+        var a = 500; // radius
+        var b = 1500; //height
+        var t2 = 0.3 * Math.PI * t * b / 50;
+        var tx = Math.cos(t2) * a,
+            tz = Math.sin(t2) * a,
+            ty = b * t;
+
+        return new THREE.Vector3(tx, ty, tz);
+    });
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+function animate() {
+
+    stats.begin();
+    statsms.begin();
+    ////////////////////////////////////////
+
+    setTimeout(function() {
+
+        requestAnimationFrame(animate);
+        updateScene();
+        lev.sendBallPositions();
+
+    }, 1000 / 30);
+
+    render();
+
+    ////////////////////////////////////////
+    stats.end();
+    statsms.end();
+
+}
+
+function render() {
+    var timer = Date.now() * 0.0001;
+    renderer.render(scene, camera);
+}
+
+function updateScene() {
+    switch (simSelect) {
+        case 0:
+            //
+            break;
+        case 1:
+            wave();
+            break;
+        case 2:
+            moveAlltoPos(positions + 1);
+            break;
+        case 3:
+            moveAlltoDefault();
+            break;
+        case 4:
+            moveToFrame(nextFrame);
+            break;
+        default:
+
+    }
+
+
+}
