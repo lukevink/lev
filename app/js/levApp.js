@@ -1,11 +1,11 @@
 //The bulk of the Application
 
 // Global inLev Settings to Init with
-columns = 5;
-positions = 5;
+columns = 10;
+positions = 10;
 simSelect = 0;
 intSelect = 0;
-ballSpeed = 0.03;
+ballSpeed = 0.05;
 columnDist = 150;
 posDist = 150;
 ballSize = 50;
@@ -658,6 +658,8 @@ function setAppParameters() {
 
 function wave() {
 
+  var staticFrame = [];
+
     var centerX = (lev.xsize - 1) / 2;
     var centerZ = (lev.zsize - 1) / 2;
     if (centerX < 1) centerX = 1;
@@ -668,8 +670,7 @@ function wave() {
     normalizedPhase = normalizedPhase + ballSpeed;
     var phase = 2 * Math.PI * normalizedPhase;
 
-    var maxDistance = Math.sqrt((centerX - 0) * (centerX - 0) + (centerZ -
-        0) * (centerZ - 0));
+    var maxDistance = Math.sqrt((centerX - 0) * (centerX - 0) + (centerZ - 0) * (centerZ - 0));
     var distanceScalar = Math.PI * (crests * 2 - 1) / maxDistance;
     var distanceOffset = 2 * Math.PI;
     var maxAmplitude = wav_amplitude;
@@ -680,18 +681,20 @@ function wave() {
         for (var z = 0; z < lev.zsize; z++) {
             for (var y = 0; y < lev.ysize; y++) {
                 var defp = ballsDefYPos[i];
-                var d = Math.sqrt((centerX - x) * (centerX - x) + (centerZ -
-                    z) * (centerZ - z));
+                var d = Math.sqrt((centerX - x) * (centerX - x) + (centerZ - z) * (centerZ - z));
                 distance = distanceScalar * d + distanceOffset;
                 var height = Math.sin(distance - phase) / distance;
-                lev.getBallById(i).position.y = heightScalar * height +
-                    defp - offset;
+                staticFrame.push(heightScalar * height + defp - offset);
                 i++;
             }
         }
     }
 
+    nextFrame = staticFrame;
+    return nextFrame;
+
 }
+
 
 //SCAN 3D OBJECT TO DETERMINE INTERSECTION POINTS TO CREATE NEXT FRAME:
 function shapeData(object) {
@@ -902,6 +905,30 @@ function planeFrame(plane) {
 
 }
 
+function stateChangeFrame(plane) {
+
+    var staticFrame = [];
+    var i = 0;
+    for (var x = 0; x < lev.xsize; x++) {
+        for (var z = 0; z < lev.zsize; z++) {
+            for (var y = 0; y < lev.ysize; y++) {
+                if (i % lev.ysize <= (lev.ysize/2)   ) {
+                    staticFrame.push(ballsDefYPos[i]);
+                } else {
+                    staticFrame.push(ballsRemoveYPos[i]);
+                }
+                i++;
+            }
+        }
+    }
+    console.log(staticFrame)
+    nextFrame = staticFrame;
+
+
+    return nextFrame;
+
+}
+
 // extrudePath, Helix Curve
 
 helixCurve = THREE.Curve.create(function() {},
@@ -952,7 +979,7 @@ function updateScene() {
             //
             break;
         case 1:
-            wave();
+            moveToFrame(wave());
             break;
         case 2:
             moveAlltoPos(positions + 1);
@@ -963,6 +990,8 @@ function updateScene() {
         case 4:
             moveToFrame(nextFrame);
             break;
+        case 5:
+            moveToFrame(waveStateChange());
         default:
 
     }
