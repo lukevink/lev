@@ -26,6 +26,7 @@ multiTempSetOnce = false;
 millis = Date.now();
 scriptedBeginTime = millis;
 scriptedDuration = 0;
+currentFrame = [];
 
 //Web Socket client
 if (typeof(io) != "undefined") {
@@ -578,7 +579,21 @@ function getCurrentFramePositions() {
 
 
 
+function getFrame() {
+        var i = 0;
+        var frame = [];
 
+
+                for (var x = 0; x < lev.xsize; x++) {
+                    for (var z = 0; z < lev.zsize; z++) {
+                        for (var y = 0; y < lev.ysize; y++) {
+                          frame.push(getBallId[i].position.y);
+                          i++;
+                        }
+                    }
+                }
+        return frame;
+}
 
 function genrateRandomNext() {
 

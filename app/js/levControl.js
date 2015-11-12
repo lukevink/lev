@@ -39,7 +39,8 @@ function onDocumentMouseDown(event) {
     if (intersects.length > 0) {
         // Disable the controls
         controls.enabled = false;
-
+        currentFrame = getFrame();
+        
         // Set the selection - first intersected object
         lev.selection = intersects[0].object;
 
