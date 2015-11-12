@@ -1,8 +1,8 @@
 //The bulk of the Application
 
 // Global inLev Settings to Init with
-columns = 10;
-positions = 10;
+columns = 9;
+positions = 9;
 simSelect = 0;
 intSelect = 0;
 ballSpeed = 0.05;
@@ -22,6 +22,10 @@ visualizeRays = false;
 wav_offset = 900;
 guiLoaded = false;
 multiTempSetOnce = false;
+
+millis = Date.now();
+scriptedBeginTime = millis;
+scriptedDuration = 0;
 
 //Web Socket client
 if (typeof(io) != "undefined") {
@@ -82,9 +86,7 @@ function InLev(xsize, zsize, ysize, scene) {
     //  var geometry = new THREE.BoxGeometry( ballSize*2, ballSize*2, ballSize*2 );
     var geometry = new THREE.SphereGeometry(ballSize, ballSize, ballSize);
     //          var material = new THREE.MeshNormalMaterial( { transparent: true, opacity: 0.5 } );
-    var material = new THREE.MeshLambertMaterial({
-        color: 0xcccccc
-    });
+    var material = new THREE.MeshLambertMaterial({color: 0xcccccc});
 
     makeBalls(this.xsize, this.zsize, this.columnDistance, geometry,
         material, this.allBalls, this.balls);
@@ -143,9 +145,7 @@ function InLev(xsize, zsize, ysize, scene) {
     }
 
     //Plane for drag
-    this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(2000, 2000, 8, 8), new THREE.MeshBasicMaterial({
-        color: 0xcccccc
-    }));
+    this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(2000, 2000, 8, 8), new THREE.MeshBasicMaterial({color: 0xcccccc}));
     this.plane.visible = false;
 
     // make the top block
@@ -889,7 +889,10 @@ function planeFrame(plane) {
         for (var z = 0; z < lev.zsize; z++) {
             for (var y = 0; y < lev.ysize; y++) {
                 if (i % lev.ysize == 0) {
-                    staticFrame.push(lev.ysize * posDist / 2);
+                  staticFrame.push(ballsDefYPos[i]);
+                // } else if (i % lev.ysize == 1) {
+                //     staticFrame.push(lev.ysize * posDist / 3 * 2);
+                //
                 } else {
                     staticFrame.push(ballsRemoveYPos[i]);
                 }
@@ -974,6 +977,8 @@ function render() {
 }
 
 function updateScene() {
+  millis = Date.now();
+
     switch (simSelect) {
         case 0:
             //

@@ -101,6 +101,10 @@ window.onload = function() {
 
     var scriptedAnimation = gui.addFolder('Scripted Animations');
     scriptedAnimation.add(levGui, 'nextFrame').onFinishChange(function() {
+        wav_crests = 5;
+        wav_amplitude = 0.4;
+        scriptedBeginTime = millis;
+        setWater();
         simSelect = 5;
     }).name('State Change');
 
