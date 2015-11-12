@@ -587,7 +587,7 @@ function getFrame() {
                 for (var x = 0; x < lev.xsize; x++) {
                     for (var z = 0; z < lev.zsize; z++) {
                         for (var y = 0; y < lev.ysize; y++) {
-                          frame.push(getBallId[i].position.y);
+                          frame.push(lev.getBall(x, z, y).position.y);
                           i++;
                         }
                     }
