@@ -1,8 +1,8 @@
 //The bulk of the Application
 
 // Global inLev Settings to Init with
-columns = 9;
-positions = 9;
+columns = 5;
+positions = 5;
 simSelect = 0;
 intSelect = 0;
 ballSpeed = 0.05;
@@ -583,7 +583,6 @@ function getFrame() {
         var i = 0;
         var frame = [];
 
-
                 for (var x = 0; x < lev.xsize; x++) {
                     for (var z = 0; z < lev.zsize; z++) {
                         for (var y = 0; y < lev.ysize; y++) {
@@ -592,6 +591,7 @@ function getFrame() {
                         }
                     }
                 }
+
         return frame;
 }
 

@@ -101,8 +101,8 @@ window.onload = function() {
 
     var scriptedAnimation = gui.addFolder('Scripted Animations');
     scriptedAnimation.add(levGui, 'nextFrame').onFinishChange(function() {
-        wav_crests = 5;
-        wav_amplitude = 0.4;
+        wav_crests = 2;
+        wav_amplitude = 0.1;
         scriptedBeginTime = millis;
         setWater();
         simSelect = 5;
