@@ -352,6 +352,16 @@ function resetInlev() {
         scene.remove(obj);
     }
     lev = new InLev(columns, columns, positions, scene);
+
+    var light1 = new THREE.DirectionalLight(0xffffff, 0.75);
+    light1.position.set(0, -1, 0);
+    scene.add(light1);
+
+    var light2 = new THREE.DirectionalLight(0xffffff, 1.5);
+    light2.position.set(1, 1, 1);
+    scene.add(light2);
+
+
 }
 
 
